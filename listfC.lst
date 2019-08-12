@@ -1,0 +1,174 @@
+Title: SAMS ASSEMBLER
+
+Name: Samuel Okei 
+
+Instructor: Dr Micheal Helm 
+
+R-Number: 11550144 
+
+0           0200                                                                 ;-------------------------------------------------------------------------------
+
+1           0200                                                                 ;   Test source code for Advanced Microcontroller Software 
+
+2           0200                                                                 ;
+
+3           0200                                                                 ;    Filename: TestSourceCodeC.s43
+
+4           0200                                                                 ;
+
+5           0200                                                                 ;   Purpose:  To provide test code for the class Assembler Project
+
+6           0200                                                                 ;
+
+7           0200                                                                 ;   Target: TI MSP430 family - simulation
+
+8           0200                                                                 ;
+
+9           0200                                                                 ;       Date:           Aug 8, 2017
+
+10          0200                                                                 ;       Last Revision:  1.0  
+
+11          0200                                                                 ;                       
+
+12          0200                                                                 ;       Written by:     Dr. Michael Helm, ECE dept, Texas Tech University
+
+13          0200                                                                 ;       Adapted from:   earlier example code
+
+14          0200                                                                 ;       Assembler/IDE:  class assembler project
+
+15          0200                                                                 ;
+
+16          0200                                                                 ;       HW I/O assignments: none assigned for this example
+
+17          0200                                                                 ;-------------------------------------------------------------------------------
+
+18          0200                                                                 ; Definition of Constants
+
+19          0200                                                                 ;-------------------------------------------------------------------------------
+
+20          0200                                                                 ; Watchdog timer definitions
+
+21          0120                                      WDTCTL                     EQU 0x0120
+22          0022                                      P1DIR                      EQU 0x0022
+23          0021                                      P1OUT                      EQU 0x0021
+24          0027                                      P1REN                      EQU 0x0027
+25          efff                                      DELAY_VALUE                EQU 0xEFFF
+26          0200                                                                 ;-------------------------------------------------------------------------------
+
+27          0200                                                                 ; Definition of Variables
+
+28          0200                                                                 ;-------------------------------------------------------------------------------
+
+29          0200                                                                 ORG 0x0200 ; beginning of RAM space
+30          0200                                      LoopCount                  DB 0
+31          0201                                      Count                      DB 0
+32          0202                                      BigVar                     DW 0
+33          0204                                                                 ;-------------------------------------------------------------------------------
+
+34          c000                                                                 ORG 0xC000 ; Program Reset (prog memory start)
+35          c000                                                                 ; this is Program memory start
+36          c000                                                                 ; address for MSP430G2553 (16K)
+37          c000                                                                 ;-------------------------------------------------------------------------------
+
+38          c000           b0400004                   RESET                      mov.w #0x0400, SP ; Initialize stackpointer(to end of RAM +1)
+39          c006                                                                 ; RAM is 512 bytes, last position is 3FFh
+40          c006           b040805a2001               StopWDT                    mov.w #0x5A80, &WDTCTL ; Stop WDT (Watchdog timer)
+41          c00c           f04041002200               SetupP1                    mov.b #0x41, &P1DIR
+42          c012           f04004002700                                          mov.b #0x04, &P1REN
+43          c018           f04004002100                                          mov.b #0x04, &P1OUT
+44          c01e                                      MainProgramStart           
+45          c01e           f0d041002100                                          bis.b #0x41, &P1OUT
+46          c024           b012                                                  call #Delay_Long
+47          c028           f0c041002100                                          bic.b #0x41, &P1OUT
+48          c02e           b012                                                  call #Delay_Long
+49          c032           ec27                                                  jz MainProgramStart
+50          c034           ea23                                                  jnz MainProgramStart
+51          c036                                                                 ;-------------------------------------------------------------------------------
+
+52          c036                                                                 ;           End of main code
+
+53          c036                                                                 ;-------------------------------------------------------------------------------                                            
+
+54          c036                                                                 ;-------------------------------------------------------------------------------
+
+55          c036                                                                 ;           Subroutines
+
+56          c036                                                                 ;------------------------------------------------------------------------------- 
+
+57          c036                                      Delay_Long                 
+58          c036           3f40ffef                   Again                      mov #DELAY_VALUE, R15
+59          c03a           1f83                       LoopTop                    dec R15
+60          c03c           fe23                                                  jnz LoopTop
+61          c03e           0041                                                  ret
+62          c040                                                                 ;-------------------------------------------------------------------------------
+
+63          c040                                                                 ;           End of all Subroutines
+
+64          c040                                                                 ;-------------------------------------------------------------------------------
+
+65          c040                                                                 ;-------------------------------------------------------------------------------
+
+66          c040                                                                 ;           Definition of Program Data Memory 
+
+67          c040                                                                 ;-------------------------------------------------------------------------------
+
+68          c040                                                                 ;none used here
+
+69          c040                                                                 ;-------------------------------------------------------------------------------
+
+70          c040                                                                 ;           Interrupt Vectors
+
+71          c040                                                                 ;-------------------------------------------------------------------------------
+
+72          fffe                                                                 ORG 0xFFFE ; MSP430 RESET Vector
+73          fffe                                                                 DW RESET ; establishes the label RESET as
+74          0000                                                                 ; the starting point
+75          0000                                                                 ;-------------------------------------------------------------------------------                                            
+
+76          0000                                                                 END ; END of all code for this program
+77          0000                                                                 ;-------------------------------------------------------------------------------
+
+78          0000                                                                 ;-------------------------------------------------------------------------------
+
+SYMBOL TABLE
+
+LABEL                        :    VALUE                    
+
+Again                        :    0xc036                    
+BigVar                       :    0x202                   
+Count                        :    0x201                    
+DELAY_VALUE                  :    0xefff              
+Delay_Long                   :    0xc036               
+LoopCount                    :    0x200                
+LoopTop                      :    0xc03a                  
+MainProgramStart             :    0xc01e         
+P1DIR                        :    0x22                    
+P1OUT                        :    0x21                    
+P1REN                        :    0x27                    
+RESET                        :    0xc000                    
+SetupP1                      :    0xc00c                  
+StopWDT                      :    0xc006                  
+WDTCTL                       :    0x120                   
+
+CODE GEN TABLE
+
+     N/O      :    ADDRESS          :     OPCODE           :     BYTE/WORD                      :     SOURCE ADRS MODE                             :       DEST ADRS MODE     
+
+     38       :    0xc000           :     mov              :     word operation                 :      Immediate mode                               :       Indexed/Absolute or Addressing mode     
+     40       :    0xc006           :     mov              :     word operation                 :      Immediate mode                               :       Indexed/Absolute or Addressing mode     
+     41       :    0xc00c           :     mov              :     byte operation                 :      Immediate mode                               :       Indexed/Absolute or Addressing mode     
+     42       :    0xc012           :     mov              :     byte operation                 :      Immediate mode                               :       Indexed/Absolute or Addressing mode     
+     43       :    0xc018           :     mov              :     byte operation                 :      Immediate mode                               :       Indexed/Absolute or Addressing mode     
+     45       :    0xc01e           :     bis              :     byte operation                 :      Immediate mode                               :       Indexed/Absolute or Addressing mode     
+     46       :    0xc024           :     call             :                                    :                                                   :                      
+     47       :    0xc028           :     bic              :     byte operation                 :      Immediate mode                               :       Indexed/Absolute or Addressing mode     
+     48       :    0xc02e           :     call             :                                    :                                                   :                      
+     49       :    0xc032           :     jz               :                                    :                                                   :                      
+     50       :    0xc034           :     jnz              :                                    :                                                   :                      
+     58       :    0xc036           :     mov              :     word operation                 :      Immediate mode                               :       Register mode     
+     59       :    0xc03a           :     sub              :     word operation                 :      Absolute, Indexed or Symbolic mode           :       Register       
+     60       :    0xc03c           :     jnz              :                                    :                                                   :                      
+     61       :    0xc03e           :     move             :     word operation                 :      Register                                     :       Register       
+
+ERROR MESSAGES
+
